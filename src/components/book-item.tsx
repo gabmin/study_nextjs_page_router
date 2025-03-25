@@ -52,7 +52,6 @@ export default function BookItem({
         >
           {author} | {publisher}
         </div>
-        {/* <div>{description}</div> */}
       </div>
     </Link>
   );

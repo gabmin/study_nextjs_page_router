@@ -4,6 +4,7 @@ import GlobalLayout from '@/components/global-layout';
 import { ReactNode } from 'react';
 import { NextPage } from 'next';
 
+// 개별 레이아웃을 설정하기 위해 타입을 확장해준다.
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactNode) => ReactNode;
 };
