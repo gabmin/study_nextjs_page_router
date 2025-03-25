@@ -2,6 +2,7 @@ import fetctTargetBooks from '@/lib/fetch-target-books';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import style from './[id].module.css';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 // css파일을 그냥 가져오게되면 클래스네임명이 중독되어 충돌되는 문제가 발생하여
 // 임의로 변환해주는 module 기능을 사용해서 가져와야함
@@ -50,26 +51,51 @@ export default function Page({
   targetBook,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
-  if (router.isFallback) return '로딩중입니다...';
+
+  // fallback 상태일 경우에는 조건문에 의해 아래의 컴포넌트가 렌더링되기 때문에 SEO가 정상적으로 적용되지 않는다.
+  // 따라서 아래의 컴포넌트에도 Meta 태그를 적용시켜 줘야한다.
+  if (router.isFallback)
+    return (
+      <>
+        <Head>
+          <title>한입 북스</title>
+          <meta property="og:image" content="/thumbnail.png" />
+          <meta property="og:title" content="한입북스" />
+          <meta
+            property="og:description"
+            content="한입 북스에 등록된 도서들을 만나보세요"
+          />
+        </Head>
+        로딩중 입니다..
+      </>
+    );
   if (!targetBook) return '문제가 발생하였습니다. 다시 시도해주세요.';
 
   const { title, subTitle, author, publisher, description, coverImgUrl } =
     targetBook;
 
   return (
-    <div className={style.container}>
-      <div
-        style={{ backgroundImage: `url(' ${coverImgUrl} ')` }}
-        className={style.imgWrap}
-      >
-        <img src={coverImgUrl} />
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta property="og:image" content={coverImgUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div className={style.container}>
+        <div
+          style={{ backgroundImage: `url(' ${coverImgUrl} ')` }}
+          className={style.imgWrap}
+        >
+          <img src={coverImgUrl} />
+        </div>
+        <div className={style.title}>{title}</div>
+        <div className={style.subTitle}>{subTitle}</div>
+        <div className={style.subTitle}>
+          {author} | {publisher}
+        </div>
+        <div className={style.description}>{description}</div>
       </div>
-      <div className={style.title}>{title}</div>
-      <div className={style.subTitle}>{subTitle}</div>
-      <div className={style.subTitle}>
-        {author} | {publisher}
-      </div>
-      <div className={style.description}>{description}</div>
-    </div>
+    </>
   );
 }

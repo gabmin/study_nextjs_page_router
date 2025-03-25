@@ -7,6 +7,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
+    // 특정 페이지 지정
     await res.revalidate('/');
     return res.json({ revalidate: true });
   } catch (error) {
