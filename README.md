@@ -92,6 +92,49 @@ export default function Page() {
 }
 ```
 
-## <br/>
+## 네비게이팅 (Navigating)
+
+```typescript
+import Link from "next/link";
+
+export default function Page() {
+  const router = useRouter();
+
+  return (
+    <>
+      <Link href={"/"}>Home</Link>
+      <Link htef={"/book"}>Book</Link>
+      <button
+        onClick={() => {
+          router.push("/search");
+        }}
+      >
+        search 페이지 이동
+      </button>
+    </>
+  );
+}
+```
+
+### Link Compoent
+
+Link 컴포넌트를 사용하여 클리언트 사이드 네비게이션(CSR) 방식처럼 수행하도록 한다.
+
+또한, 자동으로 프리페칭이 적용되어 성능 최적화에 도움을 준다.
+
+정적인 내비게이션에 적합하다.
+
+### rotuer.push()
+
+Next.js에서 제공하는 프로그래매틱한 내비게이션 방식
+
+동적 라우팅이 가능하며 app router의 경우 서버 액션과 결합이 가능하다
+
+| 방식            | 사용예시                                | 장점                                 | 단점                     |
+| --------------- | --------------------------------------- | ------------------------------------ | ------------------------ |
+| `<Link>`태그    | 정적 내비게이션 (메뉴, 헤더, 사이드바)  | 자동 프리페칭, 성능최적화            | 동적 네비게이팅이 어려움 |
+| `router.push()` | 로그인 후 리다이렉트, 버튼 클릭 후 이동 | 동적 네비게이팅 가능, 로직 추가 가능 | 프리페칭 지원 안됨       |
+
+<br/>
 
 출처: 한 입 크기로 잘라먹는 Next.js - 이정환
