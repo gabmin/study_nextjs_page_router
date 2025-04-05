@@ -139,5 +139,53 @@ Next.js에서 제공하는 프로그래매틱한 내비게이션 방식
 
 <br/>
 
+## 프리페칭 (Pre-Fetching)
+
+사용자가 보고 있는 페이지에 관련된 페이지를 미리 다 불러놓는 기능. 이를 통해 빠르게 페이지 이동이 가능함.
+
+**개발 모드에서는 프리페칭이 동작하지 않는다.**
+
+![프리페칭](./public/스크린샷%202025-04-05%20오후%204.45.20.png)
+
+일반적으로는 TTI를 줄이기 위해 next.js는 페이지별로 JS Bundle 파일을 생성하며 현재 페이지에 필요한 JS Bundle 파일만 전달된다.
+
+![페이지별 번들파일](./public/스크린샷%202025-04-05%20오후%204.48.40.png)
+![번들파일 요청](./public/스크린샷%202025-04-05%20오후%204.49.34.png)
+
+프리페칭을 통해 사전에 미리 불러와 빠르게 페이지 전환을 시켜준다.
+![프리페칭2](./public/스크린샷%202025-04-05%20오후%204.52.39.png)
+
+프로그래매틱하게 페이지 이동에서도 프리페칭이 가능하다.
+
+```typescript
+export default function Page() {
+  const router = useRouter();
+
+  const pushPage = () => {
+    router.push("/search");
+  };
+
+  useEffect(() => {
+    router.prefetch("/search");
+  }, []);
+
+  return <button onClick={pushPage}>페이지 이동</button>;
+}
+```
+
+프리페칭을 사용하고 싶지 않는 경우에는 prefetch를 false로 명시해주면 된다.
+
+```typescript
+export default function Page() {
+  return (
+    <Link href={"/search"} prefetch={false}>
+      페이지 이동
+    </Link>
+  );
+}
+```
+
+<br/>
+
 <hr/>
 출처: 한 입 크기로 잘라먹는 Next.js - 이정환
