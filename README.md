@@ -12,6 +12,8 @@
 
 #### 5. [API Routes](#5-api-routes)
 
+#### 6. [레이아웃 설정](#6-레이아웃-설정)
+
 <br/>
 
 ## 기타 정보
@@ -206,6 +208,64 @@ api 폴더 안에 api request 관련 파일을 생성하면 api routes로써 동
 특별한 상황이 있는 경우가 아니면 잘 사용하지 않는다.
 
 https://nextjs.org/docs/pages/building-your-application/routing/api-routes
+
+<br/>
+
+## 레이아웃 설정
+
+### 글로벌 레이아웃 설정
+
+header와 footer 같은 global 설정을 하기 위해 children을 props로 넘겨준다.
+
+```typescript
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <>
+      <GlobalLayout>
+        <Component {...pageProps} />
+      </GlobalLayout>
+    </>
+  );
+}
+```
+
+<br/>
+
+### 페이지별 레이아웃 설정
+
+```typescript
+// 레이아웃 컴포넌트 생성
+export default function seachbarLayout({ children }: { children: ReactNode }) {
+  return <>layout</>;
+}
+
+// 필요한 페이지에 레이아웃 적용
+export default function Home() {
+  return <></>;
+}
+
+Home.getLayout = (page: ReactNode) => {
+  return <SearchbarLayout>{page}</SearchbarLayout>;
+};
+
+// app 컴포넌트에 조건문 적용
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactNode) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
+  return (
+    <>
+      <GlobalLayout>{getLayout(<Component {...pageProps} />)}</GlobalLayout>
+    </>
+  );
+}
+```
 
 <br/>
 
