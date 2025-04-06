@@ -189,5 +189,23 @@ export default function Page() {
 
 <br/>
 
+## API Routes
+
+```
+pages
+ㄴ api
+  ㄴ example.ts
+```
+
+api 폴더 안에 api request 관련 파일을 생성하면 api routes로써 동작하게 한다.
+
+즉, `localhost:3000/api/example`로 접속하면 `example.ts` 안에 있는 로직이 실행된다.
+
+특별한 상황이 있는 경우가 아니면 잘 사용하지 않는다.
+
+https://nextjs.org/docs/pages/building-your-application/routing/api-routes
+
+<br/>
+
 <hr/>
 출처: 한 입 크기로 잘라먹는 Next.js - 이정환
