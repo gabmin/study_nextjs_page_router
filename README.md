@@ -327,5 +327,52 @@ export default function Page({
 
 <br/>
 
+### 정적 사이트 생성 (SSG)
+
+SSR로 동작할 때, 서버 응답이 오래걸리는 경우 FCP가 늘어나게 되는데 이러한 문제를 SSG를 통해 해결할 수 있다.
+
+빌드 타임에 미리 페이지를 사전렌더링하여 빠르게 화면을 보여준다.
+
+하지만, 빌드타임에 생성된 페이지이기 때문에 똑같은 페이지만 응답하며 최신 데이터 반영은 어려운 단점이 있다.
+
+즉, `getStaticProps`는 한번만 실행된다. 또한 **개발모드에서는 동작하지 않는다.**
+
+params 데이터는 빌드타임에는 알 수 없기떄문에 `getStaticProps`에서는 params 값을 사용할 수 없다. 이런 경우에는 기존 리액트에서 사용하는 방식대로 로직을 구성해야한다.
+
+![빌드타임데이터패칭](./public/스크린샷%202025-04-06%20오전%2011.30.33.png)
+![ssg](./public/스크린샷%202025-04-07%20오전%2011.15.21.png)
+
+```typescript
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const data = await fetch(url);
+
+  return {
+    props: {
+      data,
+    },
+  };
+};
+
+export default function Page({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+  const id = router.query.id;
+
+  const [state, setState] = useState({});
+
+  useEffect(() => {
+    if (id) {
+      const data = await fetch(`${url}/${id}`);
+      setState(data);
+    }
+  }, [id]);
+
+  return <>page</>;
+}
+```
+
+<br/>
+
 <hr/>
 출처: 한 입 크기로 잘라먹는 Next.js - 이정환
