@@ -389,7 +389,8 @@ export const getStaticPath = async () => {
     // paths값에 설정하지 않은 페이지에 접근하는 경우에는 어떻게 할지에 대한 설정
     fallback: false, // 404페이지가 노출됨
     fallback: "blocking", //마치 SSR이 동작하는 것처럼 즉각적으로 생성해서 렌더링해준다. (.next 폴더에 생성된 파일이 저장됨)
-    fallback: true, // 데이터 없이 컨포넌트만 렌더링하고 추후에 데이터를 응답받으면 그때 리렌더링한다.
+    fallback: true, // 데이터 없이 컴포넌트만 렌더링하고 추후에 데이터를 응답받으면 그때 리렌더링한다
+    // router.isFallback를 사용하여 데이터 응답 여부를 판별할 수 있다.
   };
 };
 
@@ -398,6 +399,8 @@ export default function Page({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
   const id = router.query.id;
+
+  if (router.isFallback) return "로딩중입니다.";
 
   const [state, setState] = useState({});
 
