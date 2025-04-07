@@ -89,7 +89,7 @@ pages
 ```typescript
 import { useRouter } from "next/router";
 
-export default function Page() {
+export default function Home() {
   const router = useRouter();
 
   const { id } = router.query;
@@ -284,6 +284,46 @@ next.js에서는 사전 렌더링시에 데이터 페칭을 실행하여 빠르�
 
 ![빌드타임데이터패칭](./public/스크린샷%202025-04-06%20오전%2011.30.33.png)
 ![사전렌더링방식](./public/스크린샷%202025-04-06%20오전%2011.31.04.png)
+
+<br/>
+
+### 서버사이드 렌더링 (SSR)
+
+`getServerSideProps`함수는 서버측에서 실행되어 컴포넌트에 필요한 데이터를 불러온다.
+
+서버측에서만 실행되기 때문에 `window`같은 브라우저에서만 실행할 수 있는 로직은 사용할 수 없다.
+
+하지만, 페이지 컴포넌트도 하이드레이션 과정에서 실행되기 때문에 `window` 객체에 접근할 수 없다.
+
+그래서 useEffect로 `window` 객체에 접근할 수 있다.
+
+![SSR](./public/스크린샷%202025-04-04%20오전%2011.09.53.png)
+
+```typescript
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
+  const params = context.query.id;
+
+  const data = await fetch(`${url}/${params}`);
+
+  return {
+    props: {
+      data,
+    },
+  };
+};
+
+export default function Page({
+  data,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  useEffect(() => {
+    console.log(window);
+  }, []);
+
+  return <></>;
+}
+```
 
 <br/>
 
