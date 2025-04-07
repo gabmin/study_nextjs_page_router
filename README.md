@@ -372,6 +372,46 @@ export default function Page({
 }
 ```
 
+임의로 params 데이터를 설정해서 동적 경로에 SSG를 적용할 수 있다.
+
+![동적경로SSG](./public/스크린샷%202025-04-07%20오전%2011.31.48.png)
+
+```typescript
+export const getStaticPath = async () => {
+  return {
+    paths: [
+      {
+        params: { id: "1" },
+        params: { id: "2" },
+        params: { id: "3" },
+      },
+    ],
+    // paths값에 설정하지 않은 페이지에 접근하는 경우에는 어떻게 할지에 대한 설정
+    fallback: false, // 404페이지가 노출됨
+    fallback: "blocking", //마치 SSR이 동작하는 것처럼 즉각적으로 생성해서 렌더링해준다. (.next 폴더에 생성된 파일이 저장됨)
+    fallback: true, // 데이터 없이 컨포넌트만 렌더링하고 추후에 데이터를 응답받으면 그때 리렌더링한다.
+  };
+};
+
+export default function Page({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+  const id = router.query.id;
+
+  const [state, setState] = useState({});
+
+  useEffect(() => {
+    if (id) {
+      const data = await fetch(`${url}/${id}`);
+      setState(data);
+    }
+  }, [id]);
+
+  return <>page</>;
+}
+```
+
 <br/>
 
 <hr/>
