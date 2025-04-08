@@ -415,6 +415,8 @@ export default function Page({
 }
 ```
 
+<br/>
+
 ### 증분정적재생성(ISR)
 
 SSG 방식으로 생서오딘 정적 페이지를 일정 시간을 주기로 다시 생성하는 기술
@@ -455,6 +457,43 @@ export default function Page({
   }, [id]);
 
   return <>page</>;
+}
+```
+
+<br/>
+
+### 주문형 재검증 (On-Demand ISR)
+
+ISR 방식은 사용자 행동에 따라 업데이트가 되는 페이지에는 사용하기가 어려운 단점이 존재한다.
+
+revalidate 설정 값이 적용되기까지 업데이트가 안될 수 있는 문제가 생길 수 있고
+![onDemandISR](./public/스크린샷%202025-04-08%20오후%203.48.41.png)
+
+짧은 revalidate로 자주 업데이트가 되는 문제가 생길 수도 있다.
+
+![onDemandISR2](./public/스크린샷%202025-04-08%20오후%203.51.25.png)
+
+SSR 방식을 사용할 수도 있지만, 매번 요청할떄마다 사전 렌더링을 실행하여 응답시간이 늦어질 수도 있고, 요청이 많이 들어오는 경우에는 서버에 부하가 생길 수도 있다. 따라서, 최대한 정적페이지로 만드는게 좋다.
+
+API Routes를 통해 handler를 만들어준다. 즉, 초기화 해주는 api를 만들어 요청해서 초기화가 되게끔 사용한다.
+
+```typescript
+// pages/api/revalidate.ts
+
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  try {
+    // 특정 페이지 지정
+    await res.revalidate("/");
+    return res.json({ revalidate: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Revalidation Failed");
+  }
 }
 ```
 
