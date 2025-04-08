@@ -2,11 +2,11 @@
 
 ## 목차
 
-#### 1. [기타 정보](#기타-정보)
+#### 1. [사전 렌더링](#1-사전-렌더링)
 
-#### 2. [사전 렌더링](#2-사전-렌더링)
+#### 2. [페이지 라우팅](#2-페이지-라우팅)
 
-#### 3. [페이지 라우팅](#3-페이지-라우팅)
+#### 3. [네비게이팅](#3-네비게이팅)
 
 #### 4. [프리 페칭](#4-프리-페칭)
 
@@ -14,9 +14,11 @@
 
 #### 6. [레이아웃 설정](#6-레이아웃-설정)
 
-<br/>
+#### 7. [사전 렌더링과 데이터 페칭](#7-사전-렌더링과-데이터-페칭)
 
-## 기타 정보
+#### 8. [SEO 설정](#8-seo-설정)
+
+<br/>
 
 ## 사전 렌더링 (Pre Rendering)
 
@@ -40,7 +42,7 @@ Next.js는 사전 렌더링을 통해 Server Side Rendering(SSR) 방식으로 FC
 
 <br/>
 
-## 페이지 라우팅 설정
+## 페이지 라우팅
 
 pages 폴더 안에 파일을 생성하면 Nexj.js에서 자체적으로 페이지로 생성해준다.
 
@@ -498,6 +500,89 @@ export default async function handler(
 ```
 
 <br/>
+
+## SEO 설정
+
+#### 파비콘 설정
+
+public 폴더에 favicon.ico 라는 이름으로 이미지를 넣어주면 자동적으로 파비콘이 적용된다.
+
+<br/>
+
+#### SEO
+
+Next.js 에서 제공하는 Head 컴포넌트를 사용하여 SEO를 적용할 수 있다.
+
+```typescript
+import Head from "next/head";
+
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
+  const id = context.params?.id;
+
+  if (!id || Array.isArray(id)) return;
+
+  const targetBook = await fetctTargetBooks(id);
+
+  // 데이터가 없을 경우 404페이지로 이동
+  if (!targetBook) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      targetBook,
+    },
+  };
+};
+
+export default function Page({
+  targetBook,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+
+  // fallback 상태일 경우에는 조건문에 의해 아래의 컴포넌트가 렌더링되기 때문에 SEO가 정상적으로 적용되지 않는다.
+  // 따라서 아래의 컴포넌트에도 Meta 태그를 적용시켜 줘야한다.
+  if (router.isFallback)
+    return (
+      <>
+        <Head>
+          <title>한입 북스</title>
+          <meta property="og:image" content="/thumbnail.png" />
+          <meta property="og:title" content="한입북스" />
+          <meta
+            property="og:description"
+            content="한입 북스에 등록된 도서들을 만나보세요"
+          />
+        </Head>
+        로딩중 입니다..
+      </>
+    );
+  if (!targetBook) return "문제가 발생하였습니다. 다시 시도해주세요.";
+
+  const { title, subTitle, author, publisher, description, coverImgUrl } =
+    targetBook;
+
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta property="og:image" content={coverImgUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div>...</div>
+    </>
+  );
+}
+```
+
+<br/>
+
+## 페이지 라우터 정리
 
 <hr/>
 출처: 한 입 크기로 잘라먹는 Next.js - 이정환
