@@ -415,6 +415,49 @@ export default function Page({
 }
 ```
 
+### 증분정적재생성(ISR)
+
+SSG 방식으로 생서오딘 정적 페이지를 일정 시간을 주기로 다시 생성하는 기술
+
+기존의 SSG 방식과 기존의 SSR 방식이 결합된 기술
+
+`revalidate`값만 설정해주면 사용 가능하다.
+
+SSG의 연장선이기 때문에 **개발모드에서는 동작하지 않는다.**
+
+![ISR](./public/스크린샷%202025-04-08%20오후%203.43.17.png)
+
+```typescript
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const data = await fetch(url);
+
+  return {
+    props: {
+      data,
+    },
+    revalidate: 3,
+  };
+};
+
+export default function Page({
+  data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+  const id = router.query.id;
+
+  const [state, setState] = useState({});
+
+  useEffect(() => {
+    if (id) {
+      const data = await fetch(`${url}/${id}`);
+      setState(data);
+    }
+  }, [id]);
+
+  return <>page</>;
+}
+```
+
 <br/>
 
 <hr/>
