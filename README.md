@@ -102,6 +102,8 @@ export default function Home() {
 }
 ```
 
+<br/>
+
 ## 네비게이팅 (Navigating)
 
 ```typescript
