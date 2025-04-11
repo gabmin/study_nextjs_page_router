@@ -128,6 +128,8 @@ export default function Page() {
 }
 ```
 
+<br/>
+
 ### Link Compoent
 
 Link 컴포넌트를 사용하여 클리언트 사이드 네비게이션(CSR) 방식처럼 수행하도록 한다.
